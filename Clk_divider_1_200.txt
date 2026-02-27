@@ -1,0 +1,37 @@
+`timescale 1ns / 1ps
+
+module Clk_Divider (
+    input clk100MHz,
+    input rst,
+    output reg clk1Hz,
+    output reg clk200Hz
+);
+
+    reg [25:0] contador1;
+    reg [17:0] contador2;
+
+    always @(posedge clk100MHz) begin
+        if (rst) begin
+        
+             clk1Hz   <= 1'b0;
+          	clk200Hz <= 1'b0; 
+        end 
+        else begin
+         
+            if (contador1 == 49999999) begin
+                contador1 <= 26'd0;
+                clk1Hz    <= ~clk1Hz;
+            end else begin
+                contador1 <= contador1 + 1'b1;
+            end
+
+            if (contador2 == 249999) begin
+                contador2 <= 18'd0;
+                clk200Hz  <= ~clk200Hz;
+            end else begin
+                contador2 <= contador2 + 1'b1;
+            end
+        end
+    end
+
+endmodule

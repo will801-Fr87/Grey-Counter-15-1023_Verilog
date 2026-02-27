@@ -1,0 +1,30 @@
+`timescale 1ns / 1ps
+
+module Conta_mod1023_G (
+    input clk,
+    input reset,
+  input UD,           // 0 = , 1 = Down 
+  output [3:0] gray_out
+);
+
+  reg [3:0] bin_count; 
+  
+    always @(posedge clk or posedge reset) begin
+         if(reset)
+            bin_count <= 1'h0;      
+      else if (UD == 1'h0) begin
+        if(bin_count == 1'hF) 
+              		bin_count <= 1'h0;
+             	else 
+            		bin_count <= bin_count + 1'h1; 
+             end
+          else begin
+            if(bin_count == 1'h0) 
+              	bin_count <= 1'hF; 
+            	else 
+                  bin_count <= bin_count - 1'h1;
+             end
+           end
+    assign gray_out = bin_count ^ (bin_count >> 1);
+
+endmodule
