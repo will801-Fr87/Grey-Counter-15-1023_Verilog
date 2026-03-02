@@ -1,6 +1,6 @@
 `timescale 1ns / 1ps
 
-module Conta_mod1023_G (
+module Conta_mod16_G (
     input clk,
     input reset,
   input UD,           // 0 = , 1 = Down 
