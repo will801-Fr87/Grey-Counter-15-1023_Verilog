@@ -1,6 +1,6 @@
 `timescale 1ns / 1ps
 
-module contador_gray_16(
+module Conta_mod_16_SM(
     input clk, 
   	input reset,
     output reg [3:0] gray_out
