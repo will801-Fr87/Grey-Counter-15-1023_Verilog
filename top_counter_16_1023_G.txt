@@ -25,7 +25,7 @@ module top_counter_gray (
         .clk200Hz(clk200Hz)
     );
 
-    contador_gray_16  (
+    Conta_mod_16_SM (
         .clk(clk1Hz), 
         .reset(rst), 
         .gray_out(g_fsm)
