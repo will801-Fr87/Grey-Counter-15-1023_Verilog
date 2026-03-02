@@ -3,64 +3,110 @@
 module top_counter_gray (
     input clk100MHz,
     input rst,
-    input sw_sm, //por  state machine o binari
+    input reset,
+    input sw_sm,
     input sw_1023, 
-    input sw_ud, // up-dowm
-    input sw_hex, // decimal-hexa
+    input sw_ud,
+    input sw_hex,
     output [6:0] a_to_g,
     output [3:0] an,
     output dp
 );
 
-    wire clk1Hz, clk200Hz;
+    wire clk_c, clk_d;
     wire [3:0] g_sm, g_bin15;
     wire [9:0] g_bin1023;
     wire [15:0] bcd_sm, bcd_bin15, bcd_1023;
-    reg  [15:0] x_visual; 
+    reg  [15:0] x_visual;
+    reg reset_sm, reset_15, reset_1023;
 
     Clk_Divider (
         .clk100MHz(clk100MHz), 
         .rst(rst), 
-        .clk1Hz(clk1Hz), 
-        .clk200Hz(clk200Hz)
+        .clk1Hz(clk_c), 
+        .clk200Hz(clk_d)
     );
+
+    always @(*) begin
+        if (reset) begin
+            reset_sm = 1;
+            reset_15 = 1;
+            reset_1023 = 1;
+            x_visual = 16'b0;
+        end
+        else begin
+            if (sw_sm) begin
+                reset_sm = 0;
+                reset_15 = 1;
+                reset_1023 = 1;
+                
+                if (sw_hex)
+                    x_visual = {12'b0, g_sm};
+                else
+                    x_visual = bcd_sm;
+            end
+            else if (sw_1023) begin
+                reset_sm = 1;
+                reset_15 = 1;
+                reset_1023 = 0;
+                
+                if (sw_hex)
+                    x_visual = {6'b0, g_bin1023};
+                else
+                    x_visual = bcd_1023;
+            end
+            else begin
+                reset_sm = 1;
+                reset_15 = 0;
+                reset_1023 = 1;
+                
+                if (sw_hex)
+                    x_visual = {12'b0, g_bin15};
+                else
+                    x_visual = bcd_bin15;
+            end
+        end
+    end
 
     Conta_mod_16_SM (
-        .clk(clk1Hz), 
-        .reset(rst), 
-        .gray_out(g_fsm)
+        .clk(clk_c), 
+        .reset(reset_sm), 
+        .gray_out(g_sm),
+        .UD(sw_ud)
     );
 
-    Conta_mod1023_G (
-        .clk(clk1Hz), 
-        .reset(rst), 
+    Conta_mod16_G (
+        .clk(clk_c), 
+        .reset(reset_15), 
         .UD(sw_ud), 
         .gray_out(g_bin15)
     );
 
     Conta_mod1023_G (
-        .clk(clk1Hz), 
-        .reset(rst), 
+        .clk(clk_c), 
+        .reset(reset_1023), 
         .UD(sw_ud), 
         .gray_out(g_bin1023)
     );
 
-    binbcd_15 (.g({6'b0, g_sm}),    .bcd_out(bcd_sm));
-    binbcd_15(.g({6'b0, g_bin15}),  .bcd_out(bcd_bin15));
-    binbcd_1023(.g(g_bin1023),        .bcd_out(bcd_1023));
+    binbcd_15 (
+        .g(g_sm),
+        .bcd_out(bcd_sm)
+    );
 
-    always @(*) begin
-        if (sw_sm) 
-            x_visual = (sw_hex) ? {12'b0, g_sm} : bcd_sm;
-        else if (sw_1023)
-            x_visual = (sw_hex) ? {6'b0, g_bin1023} : bcd_1023;
-        else
-            x_visual = (sw_hex) ? {12'b0, g_bin15} : bcd_bin15;
-    end
+    binbcd_15 (
+        .g(g_bin15),
+        .bcd_out(bcd_bin15)
+    );
+
+    binbcd_1023 (
+        .g(g_bin1023),
+        .bcd_out(bcd_1023)
+    );
 
     x7segbc inst_disp (
         .x(x_visual), 
-        .cclk(clk200Hz), 
+        .clk(clk_d), 
         .clr(rst), 
         .a_to_g(a_to_g), 
         .an(an)
