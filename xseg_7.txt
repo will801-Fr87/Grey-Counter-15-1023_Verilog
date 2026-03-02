@@ -2,7 +2,7 @@
 
 module x7segbc (
     input [15:0] x, // ajustar el tamañao para cada uno de los conteos 
-    input cclk,
+    input clk,
     input clr,
     output reg [6:0] a_to_g,
     output reg [3:0] an
