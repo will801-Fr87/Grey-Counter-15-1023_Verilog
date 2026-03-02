@@ -2,7 +2,8 @@
 
 module Conta_mod_16_SM(
     input clk, 
-  	input reset,
+    input reset,
+    input UD, // 0 = ascendente, 1 = descendente
     output reg [3:0] gray_out
 );
 
@@ -10,25 +11,48 @@ module Conta_mod_16_SM(
         if (reset) 
             gray_out <= 4'b0000;
         else begin
-            case (gray_out)
-                4'b0000: gray_out <= 4'b0001;
-                4'b0001: gray_out <= 4'b0011;
-                4'b0011: gray_out <= 4'b0010;
-                4'b0010: gray_out <= 4'b0110;
-                4'b0110: gray_out <= 4'b0111;
-                4'b0111: gray_out <= 4'b0101;
-                4'b0101: gray_out <= 4'b0100;
-                4'b0100: gray_out <= 4'b1100;
-                4'b1100: gray_out <= 4'b1101;
-                4'b1101: gray_out <= 4'b1111;
-                4'b1111: gray_out <= 4'b1110;
-                4'b1110: gray_out <= 4'b1010;
-                4'b1010: gray_out <= 4'b1011;
-                4'b1011: gray_out <= 4'b1001;
-                4'b1001: gray_out <= 4'b1000;
-                4'b1000: gray_out <= 4'b0000; 
-                default: gray_out <= 4'b0000;
-            endcase
+            if (UD == 0) begin 
+                case (gray_out)
+                    4'b0000: gray_out <= 4'b0001;
+                    4'b0001: gray_out <= 4'b0011;
+                    4'b0011: gray_out <= 4'b0010;
+                    4'b0010: gray_out <= 4'b0110;
+                    4'b0110: gray_out <= 4'b0111;
+                    4'b0111: gray_out <= 4'b0101;
+                    4'b0101: gray_out <= 4'b0100;
+                    4'b0100: gray_out <= 4'b1100;
+                    4'b1100: gray_out <= 4'b1101;
+                    4'b1101: gray_out <= 4'b1111;
+                    4'b1111: gray_out <= 4'b1110;
+                    4'b1110: gray_out <= 4'b1010;
+                    4'b1010: gray_out <= 4'b1011;
+                    4'b1011: gray_out <= 4'b1001;
+                    4'b1001: gray_out <= 4'b1000;
+                    4'b1000: gray_out <= 4'b0000;
+                    default: gray_out <= 4'b0000;
+                endcase
+            end
+            else begin
+                case (gray_out)
+                    4'b0000: gray_out <= 4'b1000;
+                    4'b1000: gray_out <= 4'b1001;
+                    4'b1001: gray_out <= 4'b1011;
+                    4'b1011: gray_out <= 4'b1010;
+                    4'b1010: gray_out <= 4'b1110;
+                    4'b1110: gray_out <= 4'b1111;
+                    4'b1111: gray_out <= 4'b1101;
+                    4'b1101: gray_out <= 4'b1100;
+                    4'b1100: gray_out <= 4'b0100;
+                    4'b0100: gray_out <= 4'b0101;
+                    4'b0101: gray_out <= 4'b0111;
+                    4'b0111: gray_out <= 4'b0110;
+                    4'b0110: gray_out <= 4'b0010;
+                    4'b0010: gray_out <= 4'b0011;
+                    4'b0011: gray_out <= 4'b0001;
+                    4'b0001: gray_out <= 4'b0000;
+                    default: gray_out <= 4'b0000;
+                endcase
+            end
         end
     end
 endmodule
